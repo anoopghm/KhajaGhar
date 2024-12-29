@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { FaBars } from "react-icons/fa"; 
-import { Link } from "react-router-dom"; // Correct import for Link
+import { Link } from "react-router-dom"; 
 import logo from "../../assets/logo.png";
 import cart from "../../assets/cart.svg";
 import MyCart from "../../pages/MyCart/MyCart.jsx";
+import PropTypes from "prop-types"; // Import PropTypes for prop validation
 
-
-const Navbar = () => {
+const Navbar = ({ value }) => {
   const [isLoggedin, setIsLoggedin] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false); // State to control cart visibility
@@ -32,7 +32,7 @@ const Navbar = () => {
             onClick={handleMenuToggle}
             className="text-gray-700 text-2xl hover:text-gray-900"
           >
-            {menuOpen ? <FaBars /> : <FaBars />} {/* Toggle menu icon */}
+            <FaBars /> {/* Single icon for toggle */}
           </button>
           {/* Logo */}
           <img src={logo} alt="Logo" className="h-12 w-auto rounded-md" />
@@ -52,7 +52,7 @@ const Navbar = () => {
               <img src={cart} alt="Cart" className="h-6 w-6" />
               {/* Cart badge if needed */}
               <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                0
+                {value}
               </span>
             </button>
           )}
@@ -101,7 +101,7 @@ const Navbar = () => {
           onClick={handleMenuToggle}
           className="absolute top-4 right-4 text-gray-700 text-2xl"
         >
-          {menuOpen ? <FaBars /> : <FaBars />} {/* Toggle icon for open/close */}
+          <FaBars /> {/* Single icon for open/close */}
         </button>
         <button
           className="block px-4 py-2 text-left hover:bg-gray-100 w-full"
@@ -127,10 +127,14 @@ const Navbar = () => {
       </div>
 
       {/* Conditionally Render the MyCart Component */}
-      {cartOpen && <MyCart/>}
-
+      {cartOpen && <MyCart />}
     </div>
   );
+};
+
+// Define prop types for validation
+Navbar.propTypes = {
+  value: PropTypes.number.isRequired, // Ensure value is a number and is required
 };
 
 export default Navbar;
