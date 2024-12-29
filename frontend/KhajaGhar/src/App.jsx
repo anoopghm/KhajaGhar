@@ -1,14 +1,22 @@
-import FoodDetails from "./components/FoodDetails/FoodDetails";
-import Navbar from "./components/Navbar/Navbar";
+import {BrowserRouter as Router, Routes,Route} from "react-router-dom";
+import SignUp from "./pages/SignUp/SignUp";
+import Login from "./pages/Login/Login";
+import Dashboard from "./pages/Dashboard/Dashboard";
+
+const routes = (
+  <Router>
+      <Routes>
+         <Route path="/login" exact element={<Login/>} />
+         <Route path="/signup" exact element={<SignUp/>} />
+         <Route path="/home" exact element={<Dashboard/>} />
+     </Routes>
+  </Router>
+);
 
 const App = () => {
   return (
     <div>
-      <div><Navbar /></div>
-      <div className="text-4xl font-bold text-center text-red-600 mt-8">
-        Unleash Your Craving
-      </div>
-      <FoodDetails/>
+        {routes}
     </div>
   );
 };
