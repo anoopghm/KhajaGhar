@@ -12,6 +12,7 @@ const Food = require("./model/food.model");
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const multer = require('multer');
 
 const jwt = require("jsonwebtoken");
 const { authenticateToken } = require("./utilities");
@@ -144,27 +145,45 @@ app.get("/get-users",authenticateToken,async(req,res) => {
 });
 
 //Adding Foods
-app.post("/addfoods", async (req, res) => {
-  const { name, price, image, description } = req.body;
+const path = require('path');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Serve the uploads folder as static
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.post("/addfoods", upload.single("image"), async (req, res) => {
+  const { name, price, description } = req.body;
+  const imagePath = req.file ? `/uploads/${req.file.filename}` : null; // Use public URL
 
   if (!name) {
     return res.status(400).json({ message: "Name is required" });
   }
-
   if (!price) {
     return res.status(400).json({ message: "Price is required" });
   }
-
   if (!description) {
     return res.status(400).json({ message: "Description is required" });
+  }
+  if (!imagePath) {
+    return res.status(400).json({ message: "Image is required" });
   }
 
   try {
     const food = new Food({
       name,
       price,
-      image,
       description,
+      image: `http://localhost:3000${imagePath}`, // Full URL for the image
     });
 
     await food.save();
@@ -178,6 +197,7 @@ app.post("/addfoods", async (req, res) => {
     res.status(500).json({ message: "Error saving food item", error });
   }
 });
+
 
 //Get Foods
 app.get("/fooditems", async (req, res) => {
