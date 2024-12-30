@@ -6,11 +6,11 @@ import burger from "../../assets/burger.png";
 import FrenchFries from "../../assets/FrenchFries.png";
 import { IoIosAdd } from "react-icons/io";
 import { RiSubtractFill } from "react-icons/ri";
-import PropTypes from "prop-types"; // Import PropTypes for prop validation
+import PropTypes from "prop-types";
 
-const FoodDetails = ({ updateValue }) => {
+const FoodDetails = ({ updateValue, passToCart }) => {
   const [foods, setFoods] = useState([]);
-  const [quantities, setQuantities] = useState({}); // To track quantities of each food item
+  const [quantities, setQuantities] = useState({});
 
   // Fetch food items from the server when the component mounts
   useEffect(() => {
@@ -42,34 +42,54 @@ const FoodDetails = ({ updateValue }) => {
       case 3:
         return FrenchFries;
       default:
-        return null; // Default image if no match
+        return null;
     }
   };
 
-  // Function to increment the quantity of a food item
+  // Memoized function for updating cart items
+  const updateCartItems = (newQuantities) => {
+    return foods.reduce((acc, food, idx) => {
+      if (newQuantities[idx] > 0) {
+        acc[food.name] = newQuantities[idx];
+      }
+      return acc;
+    }, {});
+  };
+
   const incrementQuantity = (index) => {
     setQuantities((prevQuantities) => {
       const newQuantities = {
         ...prevQuantities,
         [index]: prevQuantities[index] + 1,
       };
-      // Calculate total quantity and pass it to the parent component
-      const totalQuantity = Object.values(newQuantities).reduce((total, qty) => total + qty, 0);
+
+      const cartItems = updateCartItems(newQuantities);
+      const totalQuantity = Object.values(newQuantities).reduce(
+        (total, qty) => total + qty,
+        0
+      );
+
       updateValue(totalQuantity); // Pass the total quantity to the parent
+      passToCart(cartItems); // Pass the selected food items with names as keys
       return newQuantities;
     });
   };
 
-  // Function to decrement the quantity of a food item
   const decrementQuantity = (index) => {
     setQuantities((prevQuantities) => {
       const newQuantities = {
         ...prevQuantities,
-        [index]: Math.max(0, prevQuantities[index] - 1), // Ensure quantity doesn't go below 0
+        [index]: Math.max(0, prevQuantities[index] - 1),
       };
-      // Calculate total quantity and pass it to the parent component
-      const totalQuantity = Object.values(newQuantities).reduce((total, qty) => total + qty, 0);
+
+      const cartItems = updateCartItems(newQuantities);
+      const totalQuantity = Object.values(newQuantities).reduce(
+        (total, qty) => total + qty,
+        0
+      );
+
       updateValue(totalQuantity); // Pass the total quantity to the parent
+      passToCart(cartItems); // Pass the selected food items with names as keys
       return newQuantities;
     });
   };
@@ -118,9 +138,9 @@ const FoodDetails = ({ updateValue }) => {
   );
 };
 
-// Define prop types for validation
 FoodDetails.propTypes = {
-  updateValue: PropTypes.func.isRequired, // Ensure updateValue is a function and is required
+  updateValue: PropTypes.func.isRequired, 
+  passToCart: PropTypes.func.isRequired, 
 };
 
 export default FoodDetails;
