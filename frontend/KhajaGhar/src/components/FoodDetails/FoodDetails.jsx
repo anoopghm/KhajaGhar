@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import roti from "../../assets/roti.png";
-import pizza from "../../assets/pizza.png";
-import burger from "../../assets/burger.png";
-import FrenchFries from "../../assets/FrenchFries.png";
 import { IoIosAdd } from "react-icons/io";
 import { RiSubtractFill } from "react-icons/ri";
 import PropTypes from "prop-types";
@@ -12,13 +8,12 @@ const FoodDetails = ({ updateValue, passToCart }) => {
   const [foods, setFoods] = useState([]);
   const [quantities, setQuantities] = useState({});
 
-  // Fetch food items from the server when the component mounts
   useEffect(() => {
     axios
       .get("http://localhost:3000/fooditems")
       .then((response) => {
         setFoods(response.data);
-        // Initialize quantities for all items to 0
+
         const initialQuantities = response.data.reduce((acc, food, index) => {
           acc[index] = 0;
           return acc;
@@ -26,27 +21,10 @@ const FoodDetails = ({ updateValue, passToCart }) => {
         setQuantities(initialQuantities);
       })
       .catch((error) => {
-        console.error("There was an error fetching the data!", error);
+        console.error("Error fetching food items:", error);
       });
   }, []);
 
-  // Function to get food image based on the index
-  const getFoodImage = (index) => {
-    switch (index) {
-      case 0:
-        return roti;
-      case 1:
-        return pizza;
-      case 2:
-        return burger;
-      case 3:
-        return FrenchFries;
-      default:
-        return null;
-    }
-  };
-
-  // Memoized function for updating cart items
   const updateCartItems = (newQuantities) => {
     return foods.reduce((acc, food, idx) => {
       if (newQuantities[idx] > 0) {
@@ -69,8 +47,8 @@ const FoodDetails = ({ updateValue, passToCart }) => {
         0
       );
 
-      updateValue(totalQuantity); // Pass the total quantity to the parent
-      passToCart(cartItems); // Pass the selected food items with names as keys
+      updateValue(totalQuantity);
+      passToCart(cartItems);
       return newQuantities;
     });
   };
@@ -88,8 +66,8 @@ const FoodDetails = ({ updateValue, passToCart }) => {
         0
       );
 
-      updateValue(totalQuantity); // Pass the total quantity to the parent
-      passToCart(cartItems); // Pass the selected food items with names as keys
+      updateValue(totalQuantity);
+      passToCart(cartItems);
       return newQuantities;
     });
   };
@@ -104,7 +82,7 @@ const FoodDetails = ({ updateValue, passToCart }) => {
           >
             <div className="flex flex-col items-center mr-6">
               <img
-                src={getFoodImage(index)} // Dynamically change image based on the index
+                src={food.image} // Correctly set the image URL
                 alt={food.name}
                 className="w-32 h-32 object-cover rounded-md mb-2"
               />
@@ -139,8 +117,8 @@ const FoodDetails = ({ updateValue, passToCart }) => {
 };
 
 FoodDetails.propTypes = {
-  updateValue: PropTypes.func.isRequired, 
-  passToCart: PropTypes.func.isRequired, 
+  updateValue: PropTypes.func.isRequired,
+  passToCart: PropTypes.func.isRequired,
 };
 
 export default FoodDetails;
