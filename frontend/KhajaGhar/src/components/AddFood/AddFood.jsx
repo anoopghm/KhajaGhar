@@ -8,7 +8,6 @@ const AddFood = () => {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
 
   const navigate = useNavigate();
 
@@ -39,7 +38,6 @@ const AddFood = () => {
     formData.append("image", image);
 
     setError("");
-    setSuccess("");
 
     try {
       const response = await axiosInstance.post("/addfoods", formData, {
@@ -53,11 +51,7 @@ const AddFood = () => {
 
       if (response.data?.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
-        setSuccess("Food item added successfully!");
-        // Optionally redirect after showing the success message
-        setTimeout(() => {
-          navigate("/admin");
-        }, 2000);
+        navigate("/admin");
       }
     } catch (error) {
       setError(
@@ -78,7 +72,6 @@ const AddFood = () => {
           onChange={(e) => {
             setName(e.target.value);
             setError(null);
-            setSuccess(null);
           }}
         />
 
@@ -89,7 +82,6 @@ const AddFood = () => {
           onChange={(e) => {
             setPrice(e.target.value);
             setError(null);
-            setSuccess(null);
           }}
           className="px-4 py-2 w-full bg-gray-700 text-white rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -100,7 +92,6 @@ const AddFood = () => {
           onChange={(e) => {
             setDescription(e.target.value);
             setError(null);
-            setSuccess(null);
           }}
           className="px-4 py-2 w-full bg-gray-700 text-white rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-24"
         ></textarea>
@@ -119,13 +110,11 @@ const AddFood = () => {
             onChange={(e) => {
               setImage(e.target.files[0]);
               setError(null);
-              setSuccess(null);
             }}
             className="block w-full text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-700 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
           />
         </div>
         {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
-        {success && <p className="text-green-500 text-xs pb-1">{success}</p>}
         <button
           type="submit"
           className="px-4 py-2 bg-green-500 text-white font-semibold rounded hover:bg-green-700"
