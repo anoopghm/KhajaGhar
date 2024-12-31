@@ -8,6 +8,7 @@ mongoose.connect(config.connectionString);
 
 const User = require("./model/user.model");
 const Food = require("./model/food.model");
+const  Admin  = require("./model/admin.model");
 
 const express = require("express");
 const cors = require("cors");
@@ -162,9 +163,8 @@ const upload = multer({ storage: storage });
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.post("/addfoods", upload.single("image"), async (req, res) => {
-  const { name, price, description } = req.body;
+  const {name, price, description } = req.body;
   const imagePath = req.file ? `/uploads/${req.file.filename}` : null; // Use public URL
-
   if (!name) {
     return res.status(400).json({ message: "Name is required" });
   }
@@ -198,18 +198,144 @@ app.post("/addfoods", upload.single("image"), async (req, res) => {
   }
 });
 
+//Edit foods
+app.patch("/fooditems/:id", upload.single("image"), async (req, res) => {
+  const { id } = req.params;
+  const { name, price, description } = req.body;
+  const imagePath = req.file ? `/uploads/${req.file.filename}` : null; // Use image if provided
 
-//Get Foods
+  if (!name && !price && !description && !imagePath) {
+    return res.status(400).json({ message: "At least one field must be provided." });
+  }
+
+  try {
+    const food = await Food.findById(id);
+    if (!food) {
+      return res.status(404).json({ message: "Food item not found." });
+    }
+
+    // Update only the provided fields
+    if (name) food.name = name;
+    if (price) food.price = price;
+    if (description) food.description = description;
+    if (imagePath) food.image = `http://localhost:3000${imagePath}`;
+
+    await food.save();
+    res.status(200).json({ message: "Food item updated successfully", food });
+  } catch (error) {
+    console.error("Error updating food item:", error);
+    res.status(500).json({ message: "Error updating food item", error });
+  }
+});
+
+//Get food
+
 app.get("/fooditems", async (req, res) => {
   try {
     const foods = await Food.find();
-    res.json(foods);
+    const formattedFoods = foods.map((food) => ({
+      id: food._id,
+      name: food.name,
+      price: food.price,
+      description: food.description,
+      image: food.image,
+      createdOn: food.createdOn,
+    }));
+    res.json(formattedFoods);
   } catch (error) {
-    console.error("Error fetching food items:", error);
     res.status(500).json({ message: "Error fetching food items", error });
   }
 });
 
+
+
+
+//Add new admin 
+app.post("/create-admin",async (req,res) =>{
+  const {fullName, email, password} = req.body;
+
+  if(!fullName){
+      return res
+        .status(400)
+        .json({error: true, message : "Full Name is required" });
+  }
+
+  if(!email){
+      return res.status(400).json({error: true, message: "Email is required"});
+  }
+
+  if(!password){
+    return res
+    .status(400)
+    .json({error: true, message: "Password is required"});
+  }
+
+  const isAdmin = await Admin.findOne({email : email});
+
+  if(isAdmin){
+      return res.json({
+          error: true,
+          message : "Admin already exist",
+      });
+  }
+
+  const admin = new Admin({
+      fullName,
+      email,
+      password,
+  });
+
+ await admin.save();
+
+const accessToken = jwt.sign({admin}, process.env.ACCESS_TOKEN_SECRET, {
+  expiresIn: "3600m",
+});
+
+return res.json({
+  error:false,
+  admin,
+  accessToken,
+  message: "Registration Successful",
+});
+});
+
+
+// Admin login 
+app.post("/adminlogin",async(req,res) => {
+  const{email,password} = req.body;
+  if(!email){
+     return res.status(400).json({message:"Email is required"});
+  }
+
+  if(!password){
+     return res.status(400).json({message:"Password is required"});
+  }
+
+  const AdminInfo = await Admin.findOne({email:email});
+
+  if(!AdminInfo) {
+     return res.status(400).json({message:"Admin not found. Please ask a admin to add !"});
+  }
+
+  if(AdminInfo.email == email && AdminInfo.password == password){
+     const admin = {admin: AdminInfo };
+     const accessToken = jwt.sign(admin,process.env.ACCESS_TOKEN_SECRET,{
+         expiresIn: "36000m",
+     });
+     return res.json({
+         error:false,
+         message : "Login Successful",
+         email,
+         accessToken,
+     });
+  }
+  else{
+     return res.status(400).json({
+         error:true,
+         message: "Invalid Credentials",
+     });
+  }
+ });
 
 
 app.listen(port, () => {
