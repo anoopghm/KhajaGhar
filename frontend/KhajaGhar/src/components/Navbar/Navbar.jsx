@@ -6,7 +6,7 @@ import cart from "../../assets/cart.svg";
 import MyCart from "../../pages/MyCart/MyCart.jsx"; // Import MyCart
 import PropTypes from "prop-types"; // Import PropTypes for prop validation
 
-const Navbar = ({ value, cartItems = {} }) => {
+const Navbar = ({ value, cartItems}) => {
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false); // State to control cart visibility
@@ -136,13 +136,13 @@ const Navbar = ({ value, cartItems = {} }) => {
 
       {/* Conditionally Render the MyCart Component */}
       {cartOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex gap-4 justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-96">
             <MyCart cartItems={cartItems} />
             <button
               className="mt-4 text-white bg-red-600 px-4 py-2 rounded"
               onClick={handleCartToggle}
-            >
+             >
               Close Cart
             </button>
           </div>

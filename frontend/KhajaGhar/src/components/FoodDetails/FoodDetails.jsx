@@ -28,7 +28,10 @@ const FoodDetails = ({ updateValue, passToCart }) => {
   const updateCartItems = (newQuantities) => {
     return foods.reduce((acc, food, idx) => {
       if (newQuantities[idx] > 0) {
-        acc[food.name] = newQuantities[idx];
+        acc[food.name] = {
+          quantity: newQuantities[idx],
+          price: food.price,
+        };
       }
       return acc;
     }, {});
