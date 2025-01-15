@@ -87,6 +87,10 @@ const Login = () => {
               <Link to="/signup" className="font-medium text-primary underline">
                 Create an Account
               </Link>
+              <br />
+              <Link to="/adminlogin" className="mt-4 font-medium text-primary underline">
+                Login as Admin
+              </Link>
             </p>
           </form>
         </div>
