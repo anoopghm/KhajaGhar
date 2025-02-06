@@ -7,6 +7,7 @@ const Address = () => {
           type="number"
           placeholder="Mobile Number"
           className="p-2 border border-gray-300 rounded-lg w-full focus:ring focus:ring-blue-500 focus:outline-none"
+        maxLength = "10"
         />
         <input
           type="text"
