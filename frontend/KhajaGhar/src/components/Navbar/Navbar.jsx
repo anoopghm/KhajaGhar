@@ -124,7 +124,7 @@ const Navbar = ({ value, cartItems }) => {
         >
           About Us
         </button>
-        <Link to="/home">
+        <Link to="/">
           <button
             className="block px-4 py-2 text-left hover:bg-gray-100 w-full"
             onClick={handleMenuClose}
