@@ -1,35 +1,33 @@
-import PropTypes from "prop-types";
 import { IoIosAdd } from "react-icons/io";
 import { RiSubtractFill } from "react-icons/ri";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux';
+import { addItem, decreaseItem } from "../../features/CartSlice";
 
-const MyCart = ({ cartItems, updateCart }) => {
-  const [localCart, setLocalCart] = useState(cartItems); // Local state for cart items
+const MyCart = () => {
+  const Carts = useSelector(state => state.carts); // Fix: Accessing carts correctly
   const navigate = useNavigate();
-  // Update the cart in the parent component (pass the updated cart back)
-  const handleQuantityChange = (name, quantity) => {
-    if (quantity < 1) return; // Prevent negative or zero quantities
-
-    const updatedCart = { ...localCart, [name]: { ...localCart[name], quantity } };
-    setLocalCart(updatedCart);
-    updateCart(updatedCart); // Pass updated cart back to the parent component
-  };
+  const dispatch = useDispatch();
 
   const handleBuy = () => {
-      navigate("/Details")
-  }
+    navigate("/Details");
+  };
 
-  // Calculate total price
-  const totalPrice = Object.entries(localCart).reduce(
-    (total, [_, { quantity, price }]) => total + quantity * price,
-    0
-  );
+  const incrementQuantity = (id, foodName, price) => {
+    dispatch(addItem({ id, food: foodName, price }));
+  };
+
+  const decrementQuantity = (id) => {
+    dispatch(decreaseItem({ id }));
+  };
+
+  // Calculate total price correctly
+  const totalPrice = Carts.reduce((total, item) => total + item.quantity * item.price, 0);
 
   return (
     <div className="p-4 bg-white shadow-lg rounded-lg max-w-full mx-auto">
       <h2 className="text-xl font-semibold mb-4 text-center text-gray-800">Your Cart</h2>
-      {Object.keys(localCart).length > 0 ? (
+      {Carts.length > 0 ? ( // Fix: Checking if cart has items
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse">
             <thead>
@@ -41,29 +39,28 @@ const MyCart = ({ cartItems, updateCart }) => {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(localCart).map(([name, { quantity, price }], index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="py-2 px-3 text-sm text-gray-800">{name}</td>
-                  <td className="py-2 px-3 text-sm text-gray-700">Rs. {price}</td>
+              {Carts.map((food) => (
+                <tr key={food.id} className="border-b hover:bg-gray-50">
+                  <td className="py-2 px-3 text-sm text-gray-800">{food.food}</td> 
+                  <td className="py-2 px-3 text-sm text-gray-700">Rs. {food.price}</td>
                   <td className="py-2 px-3 text-sm">
                     <div className="flex items-center justify-start space-x-2">
                       <button
-                        className={`p-2 rounded-full ${quantity === 1 ? "text-gray-400 cursor-not-allowed" : "text-red-600 bg-gray-200 hover:bg-red-200"}`}
-                        onClick={() => quantity > 1 && handleQuantityChange(name, quantity - 1)}
-                        disabled={quantity === 1}
+                        className="p-2 rounded-full text-red-600 bg-gray-200 hover:bg-red-200"
+                        onClick={() => decrementQuantity(food.id)}
                       >
                         <RiSubtractFill size={18} />
                       </button>
-                      <span className="text-sm text-gray-800">{quantity}</span>
+                      <span className="text-sm text-gray-800">{food.quantity}</span>
                       <button
                         className="p-2 rounded-full text-green-600 bg-gray-200 hover:bg-green-200"
-                        onClick={() => handleQuantityChange(name, quantity + 1)}
+                        onClick={() => incrementQuantity(food.id, food.foodName, food.price)}
                       >
                         <IoIosAdd size={18} />
                       </button>
                     </div>
                   </td>
-                  <td className="py-2 px-3 text-sm text-gray-700">Rs. {price * quantity}</td>
+                  <td className="py-2 px-3 text-sm text-gray-700">Rs. {food.price * food.quantity}</td>
                 </tr>
               ))}
             </tbody>
@@ -71,9 +68,9 @@ const MyCart = ({ cartItems, updateCart }) => {
 
           <div className="mt-4 flex justify-between items-center">
             <button
-             className="bg-red-600 text-white py-2 px-6 rounded-full hover:bg-red-700 transition duration-300 text-sm"
-             onClick={handleBuy}
-             >
+              className="bg-red-600 text-white py-2 px-6 rounded-full hover:bg-red-700 transition duration-300 text-sm"
+              onClick={handleBuy}
+            >
               Buy Now: Rs. {totalPrice}
             </button>
           </div>
@@ -83,16 +80,6 @@ const MyCart = ({ cartItems, updateCart }) => {
       )}
     </div>
   );
-};
-
-MyCart.propTypes = {
-  cartItems: PropTypes.objectOf(
-    PropTypes.shape({
-      quantity: PropTypes.number.isRequired,
-      price: PropTypes.number.isRequired,
-    })
-  ).isRequired,
-  updateCart: PropTypes.func.isRequired,
 };
 
 export default MyCart;

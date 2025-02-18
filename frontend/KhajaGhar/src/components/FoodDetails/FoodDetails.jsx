@@ -2,90 +2,43 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { IoIosAdd } from "react-icons/io";
 import { RiSubtractFill } from "react-icons/ri";
-import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
+import { addItem, decreaseItem } from "../../features/CartSlice";
 
-const FoodDetails = ({ updateValue, passToCart }) => {
+const FoodDetails = () => {
   const [foods, setFoods] = useState([]);
-  const [quantities, setQuantities] = useState({});
+  const dispatch = useDispatch();
 
   useEffect(() => {
     axios
       .get("http://localhost:3000/fooditems")
       .then((response) => {
         setFoods(response.data);
-
-        const initialQuantities = response.data.reduce((acc, food, index) => {
-          acc[index] = 0;
-          return acc;
-        }, {});
-        setQuantities(initialQuantities);
       })
       .catch((error) => {
         console.error("Error fetching food items:", error);
       });
   }, []);
 
-  const updateCartItems = (newQuantities) => {
-    return foods.reduce((acc, food, idx) => {
-      if (newQuantities[idx] > 0) {
-        acc[food.name] = {
-          quantity: newQuantities[idx],
-          price: food.price,
-        };
-      }
-      return acc;
-    }, {});
+  const incrementQuantity = (id, food, price) => {
+    dispatch(addItem({ id, food, price }));
   };
 
-  const incrementQuantity = (index) => {
-    setQuantities((prevQuantities) => {
-      const newQuantities = {
-        ...prevQuantities,
-        [index]: prevQuantities[index] + 1,
-      };
-
-      const cartItems = updateCartItems(newQuantities);
-      const totalQuantity = Object.values(newQuantities).reduce(
-        (total, qty) => total + qty,
-        0
-      );
-
-      updateValue(totalQuantity);
-      passToCart(cartItems);
-      return newQuantities;
-    });
-  };
-
-  const decrementQuantity = (index) => {
-    setQuantities((prevQuantities) => {
-      const newQuantities = {
-        ...prevQuantities,
-        [index]: Math.max(0, prevQuantities[index] - 1),
-      };
-
-      const cartItems = updateCartItems(newQuantities);
-      const totalQuantity = Object.values(newQuantities).reduce(
-        (total, qty) => total + qty,
-        0
-      );
-
-      updateValue(totalQuantity);
-      passToCart(cartItems);
-      return newQuantities;
-    });
+  const decrementQuantity = (id, food, price) => {
+    dispatch(decreaseItem({ id, food, price }));
   };
 
   return (
     <div className="m-10">
       {foods.length > 0 ? (
-        foods.map((food, index) => (
+        foods.map((food) => (
           <div
-            key={index}
+            key={food._id} // Using MongoDB ID
             className="flex items-center bg-white p-4 mb-4 shadow-lg rounded-lg"
           >
             <div className="flex flex-col items-center mr-6">
               <img
-                src={food.image} // Correctly set the image URL
+                src={food.image}
                 alt={food.name}
                 className="w-32 h-32 object-cover rounded-md mb-2"
               />
@@ -97,14 +50,14 @@ const FoodDetails = ({ updateValue, passToCart }) => {
               <div className="flex items-center mt-2">
                 <button
                   className="flex items-center text-red-600 p-2"
-                  onClick={() => decrementQuantity(index)}
+                  onClick={() => decrementQuantity(food._id, food.name, food.price)}
                 >
                   <RiSubtractFill />
                 </button>
-                <div className="text-lg font-bold mx-4">{quantities[index]}</div>
+                <div className="text-lg font-bold mx-4">{/* Show quantity from Redux state */}</div>
                 <button
                   className="flex items-center text-green-600 p-2"
-                  onClick={() => incrementQuantity(index)}
+                  onClick={() => incrementQuantity(food._id, food.name, food.price)}
                 >
                   <IoIosAdd />
                 </button>
@@ -117,11 +70,6 @@ const FoodDetails = ({ updateValue, passToCart }) => {
       )}
     </div>
   );
-};
-
-FoodDetails.propTypes = {
-  updateValue: PropTypes.func.isRequired,
-  passToCart: PropTypes.func.isRequired,
 };
 
 export default FoodDetails;

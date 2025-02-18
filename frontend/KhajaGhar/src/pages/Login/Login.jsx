@@ -37,7 +37,7 @@ const Login = () => {
 
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
-        navigate("/home");
+        navigate("/");
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || "An unexpected error occurred. Please try again.";

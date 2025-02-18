@@ -5,13 +5,15 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import cart from "../../assets/cart.svg";
 import MyCart from "../../pages/MyCart/MyCart.jsx"; // Import MyCart
-import PropTypes from "prop-types"; // Import PropTypes for prop validation
+import { useSelector } from "react-redux";
 
-const Navbar = ({ value, cartItems }) => {
+const Navbar = () => {
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false); // State to control cart visibility
   const navigate = useNavigate();
+  const Carts = useSelector(state => state.carts);
+  const value = Carts.length
 
   // Check login status on component mount
   useEffect(() => {
@@ -151,7 +153,7 @@ const Navbar = ({ value, cartItems }) => {
             >
               <AiOutlineClose />
             </button>
-            <MyCart cartItems={cartItems} />
+            <MyCart />
           </div>
         </div>
       )}
@@ -159,10 +161,5 @@ const Navbar = ({ value, cartItems }) => {
   );
 };
 
-// Define prop types for validation
-Navbar.propTypes = {
-  value: PropTypes.number.isRequired,
-  cartItems: PropTypes.object.isRequired,
-};
 
 export default Navbar;
