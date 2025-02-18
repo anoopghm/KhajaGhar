@@ -5,6 +5,8 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import AdminLogin from "./pages/AdminLogin/AdminLogin";
 import Admin from "./pages/Admin/Admin";
 import Address from "./components/Address/Address";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
 
 const routes = (
   <Router>
@@ -21,9 +23,9 @@ const routes = (
 
 const App = () => {
   return (
-    <div>
+    <Provider store = {store}>
         {routes}
-    </div>
+    </Provider>
   );
 };
 
