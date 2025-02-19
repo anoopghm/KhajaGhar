@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import EditFood from "../../components/EditFood/EditFood";
 import AddFood from "../../components/AddFood/AddFood";
 import AddAdmin from "../../components/AddAdmin/AddAdmin";
 
@@ -24,12 +23,6 @@ const Admin = () => {
           onClick={() => setSelectedComponent("addFood")}
         >
           Add Food
-        </button>
-        <button
-          className="w-full px-6 py-4 text-white bg-blue-500 rounded hover:bg-blue-700"
-          onClick={() => setSelectedComponent("editFood")}
-        >
-          Edit Foods
         </button>
         <button className="w-full px-6 py-4 text-white bg-blue-500 rounded hover:bg-blue-700"
         onClick={() => setSelectedComponent("addadmin")}

@@ -39,6 +39,10 @@ const Navbar = () => {
     setCartOpen(!cartOpen);
   };
 
+  const handleOrders = () => {
+    navigate("/orders");
+  }
+
   return (
     <div className="bg-gray-100 shadow-md p-4 fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto flex items-center justify-between">
@@ -75,6 +79,7 @@ const Navbar = () => {
             <div className="flex items-center justify-start space-x-9">
               <button
               className="px-4 py-2 rounded bg-red-600 right-1 text-white hover:bg-red-800"
+              onClick={handleOrders}
             >
               My Orders
             </button>
