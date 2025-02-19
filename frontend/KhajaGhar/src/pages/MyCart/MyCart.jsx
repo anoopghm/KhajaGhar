@@ -5,13 +5,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addItem, decreaseItem } from "../../features/CartSlice";
 
 
-const MyCart = () => {
+const MyCart = ({isLoggedin}) => {
   const Carts = useSelector(state => state.carts); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleBuy = () => {
-    navigate("/Details");
+   {
+    isLoggedin ? navigate("/Details") : navigate("/login")
+   }
   };
 
   const incrementQuantity = (id, foodName, price) => {

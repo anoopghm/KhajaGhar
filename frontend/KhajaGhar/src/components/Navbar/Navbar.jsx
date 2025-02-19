@@ -63,14 +63,14 @@ const Navbar = () => {
 
         {/* Cart and Login/Logout */}
         <div className="flex items-center space-x-8">
-          {isLoggedin && (
+          
             <button onClick={handleCartToggle} className="relative">
               <img src={cart} alt="Cart" className="h-6 w-6" />
               <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                 {value}
               </span>
             </button>
-          )}
+           
           {isLoggedin ? (
             <div className="flex items-center justify-start space-x-9">
               <button
@@ -153,7 +153,7 @@ const Navbar = () => {
             >
               <AiOutlineClose />
             </button>
-            <MyCart />
+            <MyCart isLoggedin ={ isLoggedin} />
           </div>
         </div>
       )}
