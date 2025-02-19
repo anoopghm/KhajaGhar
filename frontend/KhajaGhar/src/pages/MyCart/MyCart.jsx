@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { addItem, decreaseItem } from "../../features/CartSlice";
 
+
 const MyCart = () => {
-  const Carts = useSelector(state => state.carts); // Fix: Accessing carts correctly
+  const Carts = useSelector(state => state.carts); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -21,13 +22,12 @@ const MyCart = () => {
     dispatch(decreaseItem({ id }));
   };
 
-  // Calculate total price correctly
   const totalPrice = Carts.reduce((total, item) => total + item.quantity * item.price, 0);
 
   return (
     <div className="p-4 bg-white shadow-lg rounded-lg max-w-full mx-auto">
       <h2 className="text-xl font-semibold mb-4 text-center text-gray-800">Your Cart</h2>
-      {Carts.length > 0 ? ( // Fix: Checking if cart has items
+      {Carts.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse">
             <thead>
@@ -54,7 +54,7 @@ const MyCart = () => {
                       <span className="text-sm text-gray-800">{food.quantity}</span>
                       <button
                         className="p-2 rounded-full text-green-600 bg-gray-200 hover:bg-green-200"
-                        onClick={() => incrementQuantity(food.id, food.foodName, food.price)}
+                        onClick={() => incrementQuantity(food.id, food.food, food.price)}
                       >
                         <IoIosAdd size={18} />
                       </button>

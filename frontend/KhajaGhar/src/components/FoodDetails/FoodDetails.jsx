@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { IoIosAdd } from "react-icons/io";
 import { RiSubtractFill } from "react-icons/ri";
-import { useDispatch } from "react-redux";
+import { useDispatch ,useSelector} from "react-redux";
 import { addItem, decreaseItem } from "../../features/CartSlice";
 
 const FoodDetails = () => {
   const [foods, setFoods] = useState([]);
   const dispatch = useDispatch();
+  const Carts = useSelector(state => state.carts);
 
   useEffect(() => {
     axios
@@ -33,7 +34,7 @@ const FoodDetails = () => {
       {foods.length > 0 ? (
         foods.map((food) => (
           <div
-            key={food._id} // Using MongoDB ID
+            key={food.id} 
             className="flex items-center bg-white p-4 mb-4 shadow-lg rounded-lg"
           >
             <div className="flex flex-col items-center mr-6">
@@ -50,14 +51,20 @@ const FoodDetails = () => {
               <div className="flex items-center mt-2">
                 <button
                   className="flex items-center text-red-600 p-2"
-                  onClick={() => decrementQuantity(food._id, food.name, food.price)}
+                  onClick={() => decrementQuantity(food.id, food.name, food.price)}
                 >
                   <RiSubtractFill />
                 </button>
-                <div className="text-lg font-bold mx-4">{/* Show quantity from Redux state */}</div>
+                <div className="text-lg font-bold mx-4">
+                  {
+                    (() => {
+                      let foundItem = Carts.find(cart => cart.id === food.id);
+                      return foundItem ? foundItem.quantity : '0';
+                    })()
+                  }</div>
                 <button
                   className="flex items-center text-green-600 p-2"
-                  onClick={() => incrementQuantity(food._id, food.name, food.price)}
+                  onClick={() => incrementQuantity(food.id, food.name, food.price)}
                 >
                   <IoIosAdd />
                 </button>
