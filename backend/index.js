@@ -32,7 +32,12 @@ app.get("/",(req,res) => {
 
 const port = 3000;
 
-app.use(cors()); 
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
 app.use(express.json());
  
 
@@ -246,8 +251,6 @@ app.get("/fooditems", async (req, res) => {
     res.status(500).json({ message: "Error fetching food items", error });
   }
 });
-
-
 
 
 //Add new admin 
