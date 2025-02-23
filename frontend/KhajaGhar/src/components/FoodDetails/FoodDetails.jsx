@@ -12,7 +12,7 @@ const FoodDetails = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/fooditems")
+      .get("https://khaja-ghar-jlb3-i09nskm52-anoopghms-projects.vercel.app/fooditems")
       .then((response) => {
         setFoods(response.data);
       })
